@@ -12,7 +12,7 @@
 module Top_Student (
     input basys_clock, 
     input [15:0] sw,
-    output reg [15:0] led, 
+    output reg [15:0] led,
    // outputs from Oled_Display
     output rgb_cs, rgb_sdin, rgb_sclk, rgb_d_cn, rgb_resn, rgb_vccen, rgb_pmoden 
    );
@@ -30,25 +30,27 @@ module Top_Student (
     wire sending_pixels;
     wire sample_pixel;
     reg reset = 0;
-
+    
+    //7-segment
+    reg correct_number = 4'b1111; // by default it's an incorrect number
+    
     // Clocks
     wire clk6p25; 
     clock_divider clk6p25m(.basys_clock(basys_clock), .m(32'b111), .my_clock_output(clk6p25));
     
     // Mouse 
-    reg mouse_click;
+    reg [6:0] mouse_click_reg = 7'b1010101; // set everything to off
+    wire [6:0] mouse_click; // set everything to off
+    assign mouse_click = mouse_click_reg;
     
     // OLED
     Oled_Display unit_oled_one (.clk(clk6p25),.reset(reset),.frame_begin(frame_begin),.sending_pixels(sending_pixels),.sample_pixel(sample_pixel),.pixel_index(pixel_index),.pixel_data(oled_data),
     .cs(rgb_cs), .sdin(rgb_sdin),.sclk(rgb_sclk),.d_cn(rgb_d_cn),.resn(rgb_resn),.vccen(rgb_vccen), .pmoden(rgb_pmoden));
     convertxy convertxy(.pixel_index(pixel_index), .x(x), .y(y));
-    oled_program oled_program(.clk(clk6p25), .x(x), .y(y), .sw(sw), .mouse_click(mouse_click), .led(led_temp), .oled_data(oled_data_temp));    
-    
+    oled_program oled_program(.clk(clk6p25), .x(x), .y(y), .sw(sw), .mouse_click(mouse_click), .led(led_temp), .oled_data(oled_data_temp), .correct_number(correct_number));    
     
     always @ (posedge basys_clock) begin 
-        for(i = 0; i < 7; i=i+1) begin
-            mouse_click = i;
-        end
+        mouse_click_reg <= mouse_click;
         oled_data <= oled_data_temp; // update oled_data
         led <= led_temp;
         
