@@ -32,7 +32,7 @@ module Top_Student (
     reg reset = 0;
     
     //7-segment
-    reg correct_number = 4'b1111; // by default it's an incorrect number
+    reg [3:0] correct_number = 4'b1111; // by default it's an incorrect number
     
     // Clocks
     wire clk6p25; 
