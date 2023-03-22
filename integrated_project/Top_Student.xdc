@@ -43,7 +43,8 @@ module Top_Student (
     wire [11:0] xpos;
     wire [11:0] ypos;
     wire [3:0] zpos;
-    wire x_mouse, y_mouse;
+    wire [6:0] x_mouse; 
+    wire [5:0] y_mouse;
     wire left, middle, right, new_event;
     // TODO: Implement Mouse middle
     reg [6:0] mouse_click_reg = 7'b0000000; // set everything to off

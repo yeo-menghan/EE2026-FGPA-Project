@@ -12,30 +12,21 @@ module mouse_program(
     output reg [6:0] x_mouse,
     output reg [5:0] y_mouse
     );
-    // TODO: migrate this mouse function to another module
-    reg state;
-    wire middle_pressed;
-    reg middle_last;
-    assign middle_pressed = (middle_last == 0) && (middle == 1);
-    
-      reg [7:0] x_cursor; 
-      reg [6:0] y_cursor;
-    
-    always @ (posedge clk) begin
-        middle_last <= middle;
-        if (middle_pressed) begin
-            state <= ~state;
-        end
-    end
+    // TODO: migrate this mouse function to another module    
+      reg [6:0] x_cursor; 
+      reg [5:0] y_cursor;
     
     always @(posedge clk) begin
        x_cursor <= (xpos * 10) / 101; 
        y_cursor <= ypos * 10 / 101;
+       
+       // TODO: replace the x_mouse & y_mouse
        if (x == x_cursor && y == y_cursor) begin
             x_mouse = x;
             y_mouse = y;
             if (left == 1) begin
                 led[0] <= 1;
+                led[1] <= 0;
                 if ((mouse_click & 7'b1111110) && (x>=8&&x<=30&&y>=3&&y<=7)) mouse_click <= (mouse_click | 7'b0000001);
                 else if ((mouse_click & 7'b1111101) && (x>=26&&x<=30&&y>=3&&y<=28)) mouse_click <= (mouse_click | 7'b0000010);
                 else if ((mouse_click & 7'b1111011) && (x>=26&&x<=30&&y>=28&&y<=48)) mouse_click <= (mouse_click | 7'b0000100);
@@ -47,6 +38,7 @@ module mouse_program(
            
             else if (right == 1) begin
                 led[1] <= 1;
+                led[0] <= 0;
                 if ((mouse_click | 7'b0000001) && (x>=8&&x<=30&&y>=3&&y<=7)) mouse_click <= (mouse_click & 7'b1111110);
                 else if ((mouse_click | 7'b0000010) && (x>=26&&x<=30&&y>=3&&y<=28)) mouse_click <= (mouse_click & 7'b1111101);
                 else if ((mouse_click | 7'b0000100) && (x>=26&&x<=30&&y>=28&&y<=48)) mouse_click <= (mouse_click & 7'b1111011);

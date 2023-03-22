@@ -73,27 +73,18 @@ module oled_program(
     assign white = 16'b11111_111111_11111;
     
     always @ (posedge clk) begin
-        if(sw[15] == 1) begin // set switch 15 as the reset switch
-            if (entire_screen) begin
-                oled_data = black;
-            end
-        end  
-        
-        oled_data = black;
-        
-        // border will always be turned on
-        if (border) begin // border on
-            oled_data = green;
-        end
+        oled_data = black;        
         
         // read from right to left
         // check number
            // if 0, turn that oled_seg to black
            // if 1, turn that oled_seg to white
         // bit-shift left by 1
-      if(x_mouse || y_mouse) begin
-        oled_data = 16'b1111_000000_00000;
+        
+      if(x==x_mouse || y==y_mouse) begin
+          oled_data = 16'b1111_000000_00000;
       end
+      
       else begin
         for(i = 0; i < 7; i = i+1) begin    
             if(mouse_click[i] == 0) begin
@@ -116,8 +107,15 @@ module oled_program(
                 end
             end  
         end
+        // border will always be turned on
+        if (border) begin // border on
+           oled_data = green;
+        end
+        // oled_seg outline will always be turned on
+        if(oled_seg_outline_combined) begin
+           oled_data = white;
+        end
       end
-      
         // check correct number, return the number
         case(mouse_click) 
             num0: correct_number = 4'b0000;
@@ -133,9 +131,11 @@ module oled_program(
             default: correct_number = 4'b1111;
         endcase
                 
-        // oled_seg outline will always be turned on
-        if(oled_seg_outline_combined) begin
-            oled_data = white;
-        end
+       
+        if(sw[15] == 1) begin // set switch 15 as the reset switch
+            if (entire_screen) begin
+             oled_data = black;
+            end
+        end  
     end // always @
 endmodule
