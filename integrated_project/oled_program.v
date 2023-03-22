@@ -6,6 +6,8 @@ module oled_program(
     input [5:0] y, 
     input [15:0] sw,
     input [6:0] mouse_click, 
+    input [6:0] x_mouse,
+    input [5:0] y_mouse,
     output reg [15:0]led,       
     output reg [15:0]oled_data,
     output reg [3:0]correct_number
@@ -89,6 +91,10 @@ module oled_program(
            // if 0, turn that oled_seg to black
            // if 1, turn that oled_seg to white
         // bit-shift left by 1
+      if(x_mouse || y_mouse) begin
+        oled_data = 16'b1111_000000_00000;
+      end
+      else begin
         for(i = 0; i < 7; i = i+1) begin    
             if(mouse_click[i] == 0) begin
                 if(oled_seg[i]) begin
@@ -110,7 +116,8 @@ module oled_program(
                 end
             end  
         end
-        
+      end
+      
         // check correct number, return the number
         case(mouse_click) 
             num0: correct_number = 4'b0000;

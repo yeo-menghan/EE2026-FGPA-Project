@@ -27,7 +27,7 @@ module Top_Student (
     
     // OLED init
     reg [15:0] oled_data = 16'b0000000000000000; // set to white first 
-    wire [15:0] oled_data_temp_oled;
+    wire [15:0] oled_data_temp;
     wire frame_begin; // start from 0
     wire [12:0] pixel_index; // current pixel being updated, goes from 0 to 6143
     wire [6:0] x;
@@ -40,10 +40,10 @@ module Top_Student (
     convertxy convertxy(.pixel_index(pixel_index), .x(x), .y(y));
   
     // Mouse init
-    wire [15:0] oled_data_temp_mouse;
     wire [11:0] xpos;
     wire [11:0] ypos;
     wire [3:0] zpos;
+    wire x_mouse, y_mouse;
     wire left, middle, right, new_event;
     // TODO: Implement Mouse middle
     reg [6:0] mouse_click_reg = 7'b0000000; // set everything to off
@@ -55,22 +55,18 @@ module Top_Student (
     //7-segment
     wire [3:0] correct_number;
     assign correct_number = 4'b1111;
-     
-    // OLED
-    oled_program oled_program(.clk(clk6p25), .x(x), .y(y), .sw(sw), .mouse_click(mouse_click), .led(led_temp), .oled_data(oled_data_temp_oled), .correct_number(correct_number));    
-         
+    
     // Mouse
     mouse_program(.clk(basys_clock), .x(x), .y(y), .xpos(xpos), .ypos(ypos), .left(left), .middle(middle), .right(right),
-       .led(led_temp), .oled_data(oled_data_temp_mouse), .mouse_click(mouse_click));
+          .led(led_temp), .mouse_click(mouse_click), .x_mouse(x_mouse), .y_mouse(y_mouse));
     
-//    // OLED + Mouse integration
-    wire oled_data_temp_combined;
-    assign oled_data_temp_combined = oled_data_temp_mouse || oled_data_temp_oled;
-   
+    // OLED
+    oled_program oled_program(.clk(clk6p25), .x(x), .y(y), .sw(sw), .mouse_click(mouse_click), .led(led_temp), .oled_data(oled_data_temp), .correct_number(correct_number));    
+         
+
     always @ (posedge basys_clock) begin 
         mouse_click_reg <= mouse_click;
-//        oled_data <= oled_data_temp_mouse || oled_data_temp_oled;
-        oled_data <= oled_data_temp_combined;
+        oled_data <= oled_data_temp;
         led <= led_temp;    
     end
 
