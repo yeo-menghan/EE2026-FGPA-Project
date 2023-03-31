@@ -21,15 +21,15 @@
 
 
 module clock_20kHz(
-input CLOCK,
-output reg LED = 0
+input basys_clock,
+output reg clk20khz = 0
     );
     
  reg [31:0] COUNT = 4'b0000;
-    always @ (posedge CLOCK) 
+    always @ (posedge basys_clock) 
     begin
         COUNT <= (COUNT == 2499) ? 0 : COUNT + 1;
-        LED <= (COUNT == 0) ? ~LED : LED;
+        clk20khz <= (COUNT == 0) ? ~clk20khz : clk20khz;
     end
   
 endmodule
@@ -45,5 +45,25 @@ output reg clk6p25m = 0
         COUNT <= (COUNT == 7) ? 0 : COUNT + 1;
         clk6p25m <= (COUNT == 0) ? ~clk6p25m : clk6p25m;
        end
-endmodule        
+endmodule
+
+module flexi_clock(
+    input sys_clk,
+    input [31:0] freq,
+    output reg clk = 0
+    );
+    
+    reg [31:0] count = 0;
+    reg [31:0] m;
+    
+    always @ (posedge sys_clk) begin
+    m = 100000000/(2*freq) - 1;
+    count <= (count == m) ? 0 : count + 1; //20Hz
+    clk <= (count == 0) ? ~clk : clk;
+    end
+    
+    
+    
+endmodule
+        
 
