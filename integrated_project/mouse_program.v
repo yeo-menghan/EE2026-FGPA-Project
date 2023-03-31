@@ -6,97 +6,54 @@ module mouse_program(
     input [5:0] y, 
     input [11:0] xpos,
     input [11:0] ypos,
+    input [6:0] mouse_click_input,
     input left, middle, right,
     output reg [15:0] led,       
-    output reg [6:0] mouse_click,
-    output reg [6:0] x_mouse,
-    output reg [5:0] y_mouse
+    output reg [6:0] mouse_click_output,
+    output reg [7:0] x_cursor,
+    output reg [6:0] y_cursor
     );
-    // TODO: migrate this mouse function to another module    
-      reg [6:0] x_cursor; 
-      reg [5:0] y_cursor;
-    
+
     always @(posedge clk) begin
-       x_cursor <= (xpos * 10) / 101; 
-       y_cursor <= ypos * 10 / 101;
-       
-       // TODO: replace the x_mouse & y_mouse
-       if (x == x_cursor && y == y_cursor) begin
-            x_mouse = x;
-            y_mouse = y;
-            if (left == 1) begin
-                led[0] <= 1;
-                led[1] <= 0;
-                if ((mouse_click & 7'b1111110) && (x>=8&&x<=30&&y>=3&&y<=7)) mouse_click <= (mouse_click | 7'b0000001);
-                else if ((mouse_click & 7'b1111101) && (x>=26&&x<=30&&y>=3&&y<=28)) mouse_click <= (mouse_click | 7'b0000010);
-                else if ((mouse_click & 7'b1111011) && (x>=26&&x<=30&&y>=28&&y<=48)) mouse_click <= (mouse_click | 7'b0000100);
-                else if ((mouse_click & 7'b1110111) && (x>=8&&x<=30&&y>=44&&y<=48)) mouse_click <= (mouse_click | 7'b0001000);
-                else if ((mouse_click & 7'b1101111) && (x>=8&&x<=12&&y>=28&&y<=48)) mouse_click <= (mouse_click | 7'b0010000);
-                else if ((mouse_click & 7'b1011111) && (x>=8&&x<=12&&y>=3&&y<=28)) mouse_click <= (mouse_click | 7'b0100000);
-                else if ((mouse_click & 7'b0111111) && (x>=8&&x<=30&&y>=25&&y<=29)) mouse_click <= (mouse_click | 7'b1000000);
-            end
-           
-            else if (right == 1) begin
-                led[1] <= 1;
-                led[0] <= 0;
-                if ((mouse_click | 7'b0000001) && (x>=8&&x<=30&&y>=3&&y<=7)) mouse_click <= (mouse_click & 7'b1111110);
-                else if ((mouse_click | 7'b0000010) && (x>=26&&x<=30&&y>=3&&y<=28)) mouse_click <= (mouse_click & 7'b1111101);
-                else if ((mouse_click | 7'b0000100) && (x>=26&&x<=30&&y>=28&&y<=48)) mouse_click <= (mouse_click & 7'b1111011);
-                else if ((mouse_click | 7'b0001000) && (x>=8&&x<=30&&y>=44&&y<=48)) mouse_click <= (mouse_click & 7'b1110111);
-                else if ((mouse_click | 7'b0010000) && (x>=8&&x<=12&&y>=28&&y<=48)) mouse_click <= (mouse_click & 7'b1101111);
-                else if ((mouse_click | 7'b0100000) && (x>=8&&x<=12&&y>=3&&y<=28)) mouse_click <= (mouse_click & 7'b1011111);
-                else if ((mouse_click | 7'b1000000) && (x>=8&&x<=30&&y>=25&&y<=29)) mouse_click <= (mouse_click & 7'b0111111);  
-            end
+//       x_cursor <= (xpos * 10) / 101; 
+//       y_cursor <= (ypos * 10) / 101;
+       // for 3x3 cursor
+       x_cursor <= (xpos * 10) / 101;
+       y_cursor <= (ypos & 10) / 101;
+               
+        if (left == 1) begin
+            led[0] <= 1;
+            led[1] <= 0;
+//            if ((mouse_click_input[0] == 0) && (x_cursor>=8&&x_cursor<=30&&y_cursor>=3&&y_cursor<=7)) begin mouse_click_output[0] <= 1; end // set mouse_click_output to 1 if initial is 0 and within the rectangle
+//            else if ((mouse_click_input[1] == 0) && (x_cursor>=26&&x_cursor<=30&&y_cursor>=3&&y_cursor<=28)) begin mouse_click_output[1] <= 1; end
+//            else if ((mouse_click_input[2] == 0) && (x_cursor>=26&&x_cursor<=30&&y_cursor>=28&&y_cursor<=48)) begin mouse_click_output[2] <= 1; end
+//            else if ((mouse_click_input[3] == 0) && (x_cursor>=8&&x_cursor<=30&&y_cursor>=44&&y_cursor<=48)) begin mouse_click_output[3] <= 1; end
+//            else if ((mouse_click_input[4] == 0) && (x_cursor>=8&&x_cursor<=12&&y_cursor>=28&&y_cursor<=48)) begin mouse_click_output[4] <= 1; end
+//            else if ((mouse_click_input[5] == 0) && (x_cursor>=8&&x_cursor<=12&&y_cursor>=3&&y_cursor<=28)) begin mouse_click_output[5] <= 1; end
+//            else if ((mouse_click_input[6] == 0) && (x_cursor>=8&&x_cursor<=30&&y_cursor>=25&&y_cursor<=29)) begin mouse_click_output[6] <= 1; end
+            if ((mouse_click_input[0] == 0) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=3&&y<=7)) begin mouse_click_output[0] <= 1; end // set mouse_click_output to 1 if initial is 0 and within the rectangle
+            else if ((mouse_click_input[1] == 0) && x_cursor == (x>=26&&x<=30) && y_cursor == (y>=3&&y<=28)) begin mouse_click_output[1] <= 1; end
+            else if ((mouse_click_input[2] == 0) && x_cursor == (x>=26&&x<=30) && y_cursor == (y>=28&&y<=48)) begin mouse_click_output[2] <= 1; end
+            else if ((mouse_click_input[3] == 0) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=44&&y<=48)) begin mouse_click_output[3] <= 1; end
+            else if ((mouse_click_input[4] == 0) && x_cursor == (x>=8&&x<=12) && y_cursor == (y>=28&&y<=48)) begin mouse_click_output[4] <= 1; end
+            else if ((mouse_click_input[5] == 0) && x_cursor == (x>=8&&x<=12) && y_cursor == (y>=3&&y<=28)) begin mouse_click_output[5] <= 1; end
+            else if ((mouse_click_input[6] == 0) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=25&&y<=29)) begin mouse_click_output[6] <= 1; end
         end
-//        else begin
-//            oled_data <= 16'b00000_000000_00000;
-//        end
-        
-        
-//       if (state) begin
-//            x_cursor <= (xpos * 10) / 101; 
-//            y_cursor <= ypos * 10 / 101;
-//            if (x == x_cursor && y == y_cursor) begin
-//                  oled_data <= 16'b11111_000000_00000;
-//            end
-//            else begin
-//                  oled_data <= 16'b00000_00000_00000;
-//            end
-//        end
-            
-//        else begin
-//            x_cursor <= (xpos * 10) / 103 + 1 ; 
-//            y_cursor <= ypos * 10 / 104 + 1;
-            
-//            if (x == x_cursor && y == y_cursor) begin
-//                    // center pixel of the 3x3 cursor
-//                  oled_data <= 16'b00000_111111_00000;
-//            end
-//            else if (x >= x_cursor-1 && x <= x_cursor+1 && y-1 == y_cursor) begin
-//                    // top row of the 3x3 cursor
-//                  oled_data <= 16'b00000_111111_00000;
-//            end
-//            else if (x >= x_cursor-1 && x <= x_cursor+1 && y+1 == y_cursor) begin
-//                    // bottom row of the 3x3 cursor
-//                  oled_data <= 16'b00000_111111_00000;
-//            end
-//            else if (x-1 == x_cursor && y >= y_cursor-1 && y <= y_cursor+1) begin
-//                    // left column of the 3x3 cursor
-//                  oled_data <= 16'b00000_111111_00000;
-//            end
-//            else if (x+1 == x_cursor && y >= y_cursor-1 && y <= y_cursor+1) begin
-//                    // right column of the 3x3 cursor
-//                  oled_data <= 16'b00000_111111_00000;
-//            end
-//            else begin
-//                    // regular cursor pixel
-//                  oled_data <= 16'b00000_00000_00000;
-//            end
-//        end
        
-
-
-    
-
+        else if (right == 1) begin
+            led[1] <= 1;
+            led[0] <= 0;
+           if ((mouse_click_input[0] == 1) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=3&&y<=7)) begin mouse_click_output[0] <= 0; end // set mouse_click_output to 1 if initial is 0 and within the rectangle
+            else if ((mouse_click_input[1] == 1) && x_cursor == (x>=26&&x<=30) && y_cursor == (y>=3&&y<=28)) begin mouse_click_output[1] <= 0; end
+            else if ((mouse_click_input[2] == 1) && x_cursor == (x>=26&&x<=30) && y_cursor == (y>=28&&y<=48)) begin mouse_click_output[2] <= 0; end
+            else if ((mouse_click_input[3] == 1) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=44&&y<=48)) begin mouse_click_output[3] <= 0; end
+            else if ((mouse_click_input[4] == 1) && x_cursor == (x>=8&&x<=12) && y_cursor == (y>=28&&y<=48)) begin mouse_click_output[4] <= 0; end
+            else if ((mouse_click_input[5] == 1) && x_cursor == (x>=8&&x<=12) && y_cursor == (y>=3&&y<=28)) begin mouse_click_output[5] <= 0; end
+            else if ((mouse_click_input[6] == 1) && x_cursor == (x>=8&&x<=30) && y_cursor == (y>=25&&y<=29)) begin mouse_click_output[6] <= 0; end
+        end
+        else begin
+            led[0] <= 0;
+            led[1] <= 0;
+        end
     end // always
 endmodule
